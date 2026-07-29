@@ -31,7 +31,7 @@ Nhiệm vụ bắt buộc:
 UI là deliverable core, không phải bonus. Starter không cung cấp `app.py`; nhóm tự tạo UI bằng framework đã chọn.
 
 Optional/advanced tools có sẵn (không tính là tool mới của team; giữ declaration vẫn có thể đổi routing):
-
+.
 - `send`: gửi text lên Telegram; live-send là optional.
 - `policy`, `papers`, `paper_text`: tải/trích PDF; đều optional.
 
