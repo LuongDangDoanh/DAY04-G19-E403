@@ -27,6 +27,7 @@ from .currency_converter.tool import convert_currency
 from .pdf_text_extractor.tool import extract_pdf_text
 from .csv_summary.tool import summarize_csv
 from .markdown_summarizer.tool import summarize_markdown
+from .source_quality.tool import source_quality
 
 
 # NOTE (starter_v0): tool names here are intentionally vague. These keys are the
@@ -49,6 +50,7 @@ TOOL_FUNCTIONS = {
     "pdf_text_extractor": extract_pdf_text,
     "csv_summary": summarize_csv,
     "markdown_summarizer": summarize_markdown,
+    "source_quality": source_quality,
     "fetch": read_url,
     "format": render_digest,
     "send": send_telegram,

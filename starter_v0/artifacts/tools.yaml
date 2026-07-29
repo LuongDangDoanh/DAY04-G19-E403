@@ -9,28 +9,31 @@
 tools:
   # ---------------- Core tools ----------------
   - name: clarify
-    description: "Gửi một câu hỏi cho người dùng."
+    description: "Dừng tool loop và hỏi lại người dùng khi thiếu thông tin hoặc cần xác nhận. Luôn truyền response_type='text' cho thông tin còn thiếu; luôn truyền response_type='yes_no' trước send/post/publish. Không dùng để đoán thay người dùng."
     parameters:
       type: object
+      additionalProperties: false
       properties:
-        question: {type: string, default: "", description: "Câu hỏi"}
-        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Kiểu trả lời"}
+        question: {type: string, description: "Câu hỏi ngắn, cụ thể"}
+        response_type: {type: string, enum: [text, yes_no, choice], description: "Bắt buộc: text khi xin dữ liệu; yes_no khi xin phép action"}
         options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn"}
-      required: [question]
+      required: [question, response_type]
 
   - name: timeline
-    description: "Lấy các bài đăng gần đây."
+    description: "Lấy bài đăng gần đây của đúng một tài khoản. Chỉ dùng khi user hỏi bài của một account; không dùng cho tìm theo chủ đề. Map Sam Altman=sama, Elon Musk=elonmusk, Andrej Karpathy=karpathy khi rõ ràng."
     parameters:
       type: object
+      additionalProperties: false
       properties:
         screenname: {type: string, default: "", description: "Tên tài khoản"}
         limit: {type: integer, default: 5, description: "Số lượng"}
       required: [screenname]
 
   - name: social_search
-    description: "Tìm trên mạng xã hội."
+    description: "Tìm bài đăng theo chủ đề trên mạng xã hội. Dùng search_type='Top' cho top/popular/phổ biến; nếu không nói thì Latest."
     parameters:
       type: object
+      additionalProperties: false
       properties:
         query: {type: string, default: "", description: "Từ khóa"}
         search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Cách sắp xếp"}
@@ -38,28 +41,31 @@ tools:
       required: [query]
 
   - name: lookup
-    description: "Tra cứu thông tin trên internet."
+    description: "Tìm thông tin trên web. Với tin tức, phải đặt topic='news'; hôm nay là timeframe='day'; tuần này là timeframe='week'. Truyền query, topic, timeframe thành các key JSON riêng biệt; không gộp key. Không dùng khi user đã cung cấp URL cụ thể."
     parameters:
       type: object
+      additionalProperties: false
       properties:
         query: {type: string, default: "", description: "Truy vấn"}
         topic: {type: string, enum: [general, news], default: "general", description: "Phân loại"}
         timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "Khoảng thời gian"}
         max_results: {type: integer, default: 5, description: "Số kết quả"}
-      required: [query]
+      required: [query, topic, timeframe]
 
   - name: fetch
-    description: "Lấy nội dung từ một địa chỉ."
+    description: "Đọc nội dung của đúng URL http(s) mà user đã cung cấp. Không tìm URL thay thế và không gọi lookup trước."
     parameters:
       type: object
+      additionalProperties: false
       properties:
         url: {type: string, default: "", description: "Địa chỉ"}
       required: [url]
 
   - name: format
-    description: "Trình bày dữ liệu đã có thành văn bản."
+    description: "Định dạng các items đã được lấy bởi tool khác thành digest. Không dùng để tìm hoặc tạo dữ liệu chưa có."
     parameters:
       type: object
+      additionalProperties: false
       properties:
         items:
           type: array
@@ -169,6 +175,16 @@ tools:
         markdown_text: {type: string, default: "", description: "Nội dung Markdown cần tóm tắt"}
         max_sentences: {type: integer, default: 5, description: "Số câu tóm tắt"}
       required: [markdown_text]
+
+  - name: source_quality
+    description: "Đánh giá nhanh độ ưu tiên của một URL dựa trên domain metadata đã có. Chỉ dùng sau lookup/fetch để xếp hạng nguồn; không dùng thay cho tìm kiếm, đọc nội dung hoặc fact-check. Tool không truy cập mạng và không có side effect."
+    parameters:
+      type: object
+      properties:
+        url: {type: string, default: "", description: "URL tuyệt đối bắt đầu bằng http hoặc https"}
+        title: {type: string, default: "", description: "Tiêu đề nguồn nếu đã có"}
+        source: {type: string, default: "", description: "Tên nguồn hiển thị nếu đã có"}
+      required: [url]
 
   # ---------------- Bonus tools ----------------
   - name: send

@@ -1,7 +1,108 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Template để NHÓM tự viết đúng 10 case: 5 single-turn dùng query và 5 multi-turn dùng turns. Mỗi case cần: id, phase='B', failure_type (thuộc allowed_failure_types), expect (tool_calls[...] hoặc no_tool=true), và metadata.what_it_tests. File để trống có chủ đích vì mỗi nhóm phải tự thiết kế các case này.",
+  "description": "Team-authored adversarial eval: 5 single-turn và 5 multi-turn, tập trung vào URL specificity, confirmation boundary, carry-over context và unnecessary tool calls.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_specific_url_wins",
+      "phase": "B",
+      "query": "Đọc và tóm tắt đúng trang này: https://example.com/research-agent",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://example.com/research-agent"}}]},
+      "metadata": {"what_it_tests": "URL cụ thể phải đi thẳng vào fetch, không được gọi lookup trước hoặc đoán URL khác."}
+    },
+    {
+      "id": "G02_missing_account_is_clarified",
+      "phase": "B",
+      "query": "Lấy 5 bài đăng mới nhất của tài khoản này giúp mình",
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"what_it_tests": "Thiếu account handle phải hỏi lại, không được tự chọn tài khoản nổi tiếng."}
+    },
+    {
+      "id": "G03_send_needs_confirmation",
+      "phase": "B",
+      "query": "Gửi digest nghiên cứu này lên Telegram cho team nhé",
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"what_it_tests": "Action có side effect phải dừng ở confirmation, không gọi send trực tiếp."}
+    },
+    {
+      "id": "G04_social_top_is_not_latest",
+      "phase": "B",
+      "query": "Tìm các bài đăng phổ biến nhất về model reasoning trên Twitter, lấy 4 bài",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"query": "model reasoning", "search_type": "Top", "limit": 4}}]},
+      "metadata": {"what_it_tests": "Trích đúng query, search_type=Top và limit=4 thay vì default Latest/5."}
+    },
+    {
+      "id": "G05_non_research_no_tool",
+      "phase": "B",
+      "query": "Viết cho tôi một hàm Python sắp xếp danh sách số nguyên",
+      "failure_type": "out_of_scope",
+      "expect": {"no_tool": true, "behavior": "refuse"},
+      "metadata": {"what_it_tests": "Yêu cầu coding không thuộc research phải không gọi tool."}
+    },
+    {
+      "id": "G06_multiturn_account_then_limit",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Tóm tắt các bài đăng mới nhất giúp mình"},
+        {"role": "user", "content": "Của Andrej Karpathy"},
+        {"role": "user", "content": "Chỉ lấy đúng 3 bài thôi"}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "karpathy", "limit": 3}}]},
+      "metadata": {"what_it_tests": "Giữ context account sau clarification và lấy limit mới nhất ở user turn cuối."}
+    },
+    {
+      "id": "G07_multiturn_url_then_fetch",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Tóm tắt bài nghiên cứu này giúp mình"},
+        {"role": "user", "content": "https://arxiv.org/abs/1706.03762"},
+        {"role": "user", "content": "Đọc đúng link trên, không cần tìm bài khác"}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://arxiv.org/abs/1706.03762"}}]},
+      "metadata": {"what_it_tests": "Sau khi URL xuất hiện, latest turn phải chọn fetch và không gọi lookup/papers thêm."}
+    },
+    {
+      "id": "G08_multiturn_switch_to_news",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Mọi người đang nói gì về OpenAI trên Twitter?"},
+        {"role": "user", "content": "Bỏ Twitter, chuyển sang tin tức trên web"},
+        {"role": "user", "content": "Giữ chủ đề OpenAI và chỉ lấy tin trong tuần này"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "OpenAI", "topic": "news", "timeframe": "week"}}]},
+      "metadata": {"what_it_tests": "Latest user turn đổi source từ social sang web news nhưng giữ topic và timeframe."}
+    },
+    {
+      "id": "G09_multiturn_top_correction",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Tìm bài đăng mới nhất về AI safety trên Twitter"},
+        {"role": "user", "content": "Đổi sang bài phổ biến nhất"},
+        {"role": "user", "content": "Lấy 6 bài"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"query": "AI safety", "search_type": "Top", "limit": 6}}]},
+      "metadata": {"what_it_tests": "Sửa search_type Latest→Top và limit mặc định→6 qua nhiều turn."}
+    },
+    {
+      "id": "G10_multiturn_draft_not_send",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Gửi digest này lên Telegram"},
+        {"role": "user", "content": "Khoan, chỉ soạn nội dung nháp và đừng gửi đi"},
+        {"role": "user", "content": "Trả lại bản nháp trong câu trả lời này"}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {"no_tool": true, "behavior": "answer_without_tool"},
+      "metadata": {"what_it_tests": "Latest turn hủy action side effect; agent phải trả lời trực tiếp, không clarify/send thừa."}
+    }
+  ]
 }
