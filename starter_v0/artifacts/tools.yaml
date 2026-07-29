@@ -77,6 +77,99 @@ tools:
         headline: {type: string, default: "", description: "Tiêu đề"}
       required: [items, template]
 
+  - name: web_search
+    description: "Tìm thông tin nhanh trên web." 
+    parameters:
+      type: object
+      properties:
+        query: {type: string, default: "", description: "Từ khóa cần tìm"}
+        max_results: {type: integer, default: 5, description: "Số kết quả tối đa"}
+        region: {type: string, default: "global", description: "Vùng tìm kiếm (tùy chọn)"}
+      required: [query]
+
+  - name: webpage_reader
+    description: "Đọc nội dung văn bản thô từ một trang web."
+    parameters:
+      type: object
+      properties:
+        url: {type: string, default: "", description: "Địa chỉ trang web"}
+        max_chars: {type: integer, default: 4000, description: "Số ký tự trả về tối đa"}
+      required: [url]
+
+  - name: calculator
+    description: "Tính toán biểu thức số học đơn giản." 
+    parameters:
+      type: object
+      properties:
+        expression: {type: string, default: "", description: "Biểu thức toán học"}
+      required: [expression]
+
+  - name: unit_converter
+    description: "Chuyển đổi giá trị giữa các đơn vị cơ bản." 
+    parameters:
+      type: object
+      properties:
+        value: {type: number, default: 0, description: "Giá trị cần đổi"}
+        from_unit: {type: string, default: "", description: "Đơn vị gốc"}
+        to_unit: {type: string, default: "", description: "Đơn vị đích"}
+        category: {type: string, default: "", description: "Danh mục đơn vị (length/weight/temperature)"}
+      required: [value, from_unit, to_unit]
+
+  - name: datetime_tool
+    description: "Trả về ngày giờ hiện tại với định dạng tuỳ chọn." 
+    parameters:
+      type: object
+      properties:
+        format: {type: string, default: "%Y-%m-%d %H:%M:%S", description: "Chuỗi định dạng ngày giờ"}
+        utc: {type: boolean, default: false, description: "True nếu trả về UTC"}
+      required: []
+
+  - name: weather_lookup
+    description: "Lấy thời tiết hiện tại cho một địa điểm cụ thể." 
+    parameters:
+      type: object
+      properties:
+        location: {type: string, default: "", description: "Tên địa điểm"}
+        units: {type: string, enum: [metric, imperial], default: "metric", description: "Đơn vị nhiệt độ"}
+      required: [location]
+
+  - name: currency_converter
+    description: "Chuyển đổi tiền tệ theo tỷ giá hiện tại." 
+    parameters:
+      type: object
+      properties:
+        amount: {type: number, default: 0, description: "Số tiền cần đổi"}
+        from_currency: {type: string, default: "", description: "Mã tiền tệ gốc"}
+        to_currency: {type: string, default: "", description: "Mã tiền tệ đích"}
+      required: [amount, from_currency, to_currency]
+
+  - name: pdf_text_extractor
+    description: "Trích xuất văn bản từ file PDF cục bộ." 
+    parameters:
+      type: object
+      properties:
+        pdf_path: {type: string, default: "", description: "Đường dẫn file PDF"}
+        max_pages: {type: integer, default: 5, description: "Số trang tối đa đọc"}
+      required: [pdf_path]
+
+  - name: csv_summary
+    description: "Tóm tắt cấu trúc và một vài dòng mẫu từ CSV." 
+    parameters:
+      type: object
+      properties:
+        csv_path: {type: string, default: "", description: "Đường dẫn file CSV"}
+        max_rows: {type: integer, default: 5, description: "Số dòng mẫu trả về"}
+      required: [csv_path]
+
+  - name: markdown_summarizer
+    description: "Tóm tắt văn bản Markdown bằng cách lấy các câu chính." 
+    parameters:
+      type: object
+      properties:
+        markdown_text: {type: string, default: "", description: "Nội dung Markdown cần tóm tắt"}
+        max_sentences: {type: integer, default: 5, description: "Số câu tóm tắt"}
+      required: [markdown_text]
+
   # ---------------- Bonus tools ----------------
   - name: send
     description: "Gửi một đoạn văn bản đi."

@@ -16,7 +16,17 @@ from .format.tool import render_digest
 from .policy.tool import search_company_policy
 from .social_search.tool import search_tweets
 from .send.tool import send_telegram
-from .lookup.tool import web_search
+from .lookup.tool import web_search as lookup_search
+from .web_search.tool import web_search
+from .webpage_reader.tool import read_webpage
+from .calculator.tool import calculate
+from .unit_converter.tool import convert_unit
+from .datetime_tool.tool import current_datetime
+from .weather_lookup.tool import get_weather
+from .currency_converter.tool import convert_currency
+from .pdf_text_extractor.tool import extract_pdf_text
+from .csv_summary.tool import summarize_csv
+from .markdown_summarizer.tool import summarize_markdown
 
 
 # NOTE (starter_v0): tool names here are intentionally vague. These keys are the
@@ -28,7 +38,17 @@ TOOL_FUNCTIONS = {
     "clarify": ask_user,
     "timeline": get_user_tweets,
     "social_search": search_tweets,
-    "lookup": web_search,
+    "lookup": lookup_search,
+    "web_search": web_search,
+    "webpage_reader": read_webpage,
+    "calculator": calculate,
+    "unit_converter": convert_unit,
+    "datetime_tool": current_datetime,
+    "weather_lookup": get_weather,
+    "currency_converter": convert_currency,
+    "pdf_text_extractor": extract_pdf_text,
+    "csv_summary": summarize_csv,
+    "markdown_summarizer": summarize_markdown,
     "fetch": read_url,
     "format": render_digest,
     "send": send_telegram,
