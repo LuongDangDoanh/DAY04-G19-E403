@@ -9,13 +9,13 @@
 tools:
   # ---------------- Core tools ----------------
   - name: clarify
-    description: "Gửi một câu hỏi cho người dùng."
+    description: "Hỏi người dùng khi thiếu thông tin hoặc cần xác nhận. Dùng response_type='yes_no' khi cần xác nhận trước hành động ghi (gửi, đăng bài). Dùng response_type='text' khi hỏi thông tin còn thiếu (handle, URL)."
     parameters:
       type: object
       properties:
-        question: {type: string, default: "", description: "Câu hỏi"}
-        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Kiểu trả lời"}
-        options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn"}
+        question: {type: string, default: "", description: "Câu hỏi gửi tới người dùng"}
+        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "text=hỏi thông tin, yes_no=xác nhận trước khi ghi, choice=chọn từ danh sách"}
+        options: {type: array, default: [], items: {type: string}, description: "Danh sách lựa chọn khi response_type=choice"}
       required: [question]
 
   - name: timeline
@@ -49,11 +49,11 @@ tools:
       required: [query]
 
   - name: fetch
-    description: "Lấy nội dung từ một địa chỉ."
+    description: "Đọc nội dung từ một URL cụ thể. Chỉ dùng khi user đã cung cấp URL rõ ràng. Nếu user nói 'bài này' mà chưa có URL, dùng clarify để hỏi URL trước."
     parameters:
       type: object
       properties:
-        url: {type: string, default: "", description: "Địa chỉ"}
+        url: {type: string, default: "", description: "URL đầy đủ cần đọc"}
       required: [url]
 
   - name: format

@@ -1,7 +1,102 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Template để NHÓM tự viết đúng 10 case: 5 single-turn dùng query và 5 multi-turn dùng turns. Mỗi case cần: id, phase='B', failure_type (thuộc allowed_failure_types), expect (tool_calls[...] hoặc no_tool=true), và metadata.what_it_tests. File để trống có chủ đích vì mỗi nhóm phải tự thiết kế các case này.",
-  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "description": "Team eval: 10 cases covering format, papers, policy, and complex multi-turn scenarios not in base.",
+  "cases": [
+    {
+      "id": "G01_direct_timeline_routing",
+      "phase": "B",
+      "failure_type": "wrong_tool",
+      "query": "Cho xem 3 tweet gần nhất của tổng thống Mỹ Joe Biden",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "JoeBiden", "limit": 3}}]},
+      "metadata": {"what_it_tests": "Map tên tổng thống Mỹ Joe Biden thành handle JoeBiden + limit=3"}
+    },
+    {
+      "id": "G02_arxiv_recent",
+      "phase": "B",
+      "failure_type": "wrong_arg_value",
+      "query": "Tìm paper arXiv gần đây nhất về reinforcement learning",
+      "expect": {"tool_calls": [{"name": "papers", "args": {"sort_by": "lastUpdatedDate"}}]},
+      "metadata": {"what_it_tests": "User muốn paper mới nhất → papers với sort_by=lastUpdatedDate"}
+    },
+    {
+      "id": "G03_name_mapping_unknown",
+      "phase": "B",
+      "failure_type": "wrong_arg_value",
+      "query": "Tweet mới nhất của Satya Nadella là gì?",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "satyanadella"}}]},
+      "metadata": {"what_it_tests": "Map tên Satya Nadella thành handle satyanadella (không có trong prompt mapping mẫu)"}
+    },
+    {
+      "id": "G04_out_of_scope_weather",
+      "phase": "B",
+      "failure_type": "out_of_scope",
+      "query": "Dự báo thời tiết hôm nay ở Hà Nội thế nào?",
+      "expect": {"no_tool": true, "behavior": "refuse"},
+      "metadata": {"what_it_tests": "Câu hỏi thời tiết ngoài phạm vi research → không gọi tool, từ chối"}
+    },
+    {
+      "id": "G05_missing_both_handle_and_content",
+      "phase": "B",
+      "failure_type": "missing_info",
+      "query": "Tóm tắt tweet mới nhất và tìm thêm thông tin trên web về chủ đề đó",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"what_it_tests": "Thiếu cả Twitter handle và query tìm kiếm → clarify hỏi thông tin, không đoán"}
+    },
+    {
+      "id": "G06_refine_search",
+      "phase": "B",
+      "failure_type": "wrong_arg_value",
+      "turns": [
+        {"role": "user", "content": "Tìm tin tức AI hôm nay"},
+        {"role": "user", "content": "Chỉ tìm tin về GPT-5 thôi"},
+        {"role": "user", "content": "Giữ nguyên tin hôm nay và topic news"}
+      ],
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "GPT-5", "topic": "news", "timeframe": "day"}}]},
+      "metadata": {"what_it_tests": "3 turns: carry timeframe=day và topic=news, chỉ đổi query thành GPT-5"}
+    },
+    {
+      "id": "G07_clarify_then_confirm_send",
+      "phase": "B",
+      "failure_type": "wrong_boundary",
+      "turns": [
+        {"role": "user", "content": "Đăng tweet này lên Twitter giúp mình: 'AI is the future!'"},
+        {"role": "user", "content": "Có, gửi đi"},
+        {"role": "user", "content": "Gửi ngay, tôi đã xác nhận rồi"}
+      ],
+      "expect": {"tool_calls": [{"name": "send", "args": {"text": "AI is the future!"}}]},
+      "metadata": {"what_it_tests": "3 turns: user đã confirm → gọi send với confirmed=True, không cần hỏi lại"}
+    },
+    {
+      "id": "G08_switch_source",
+      "phase": "B",
+      "failure_type": "wrong_tool",
+      "turns": [
+        {"role": "user", "content": "Tìm trên web thông tin về Claude 4"},
+        {"role": "user", "content": "Thôi bỏ web đi, search Twitter về Claude 4 cho tôi"},
+        {"role": "user", "content": "Tweet về Claude 4 thôi, đừng tìm web nữa"}
+      ],
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"query": "Claude 4"}}]},
+      "metadata": {"what_it_tests": "3 turns: chuyển từ lookup sang social_search khi user bỏ web, không gọi cả hai"}
+    },
+    {
+      "id": "G09_policy_external_publishing",
+      "phase": "B",
+      "failure_type": "wrong_arg_value",
+      "query": "Policy công ty về external publishing có yêu cầu gì về xác nhận trước khi đăng không?",
+      "expect": {"tool_calls": [{"name": "policy", "args": {"policy_area": "external_publishing"}}]},
+      "metadata": {"what_it_tests": "User hỏi policy external publishing → policy với policy_area=external_publishing"}
+    },
+    {
+      "id": "G10_parallel_paper_and_policy",
+      "phase": "B",
+      "failure_type": "wrong_tool",
+      "query": "Tìm paper arXiv về AI safety và kiểm tra policy công ty về source citation",
+      "expect": {"tool_calls": [
+        {"name": "papers", "args": {"query": "AI safety"}},
+        {"name": "policy", "args": {"policy_area": "source_citation"}}
+      ]},
+      "metadata": {"what_it_tests": "Một request cần 2 nguồn: papers + policy; eval không phụ thuộc thứ tự tool call"}
+    }
+  ]
 }
