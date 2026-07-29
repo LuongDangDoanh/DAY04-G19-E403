@@ -2,6 +2,15 @@
 
 ## Brief
 
+| STT | Họ và tên | Mã học viên | Vai trò trong nhóm |
+|-----|-----------|-------------|--------------------|
+| 1   |  Nguyễn Quốc Việt  |     2A202601737      |      Thành viên            |
+| 2   |  Trương Đình Khoa  |     2A202601297      |      Thành viên            |
+| 3   |  Phùng Văn Đạt     |     2A202602012      |      Thành viên            |
+| 4   |  Lương Đăng Doanh  |     2A202601209      |      Nhóm trưởng           |
+| 5   |  Diêm Công Thành   |     2A202601689      |      Thành viên            |
+| 6   |  Nguyên Quang Huy  |     2A202601873      |      Thành viên            |
+
 Trong lab này, nhóm build một research agent nhỏ nhưng chạy thật. Agent nhận request của user, chọn tool, truyền arguments, chạy tool thật, lưu full JSON log, rồi dùng log đó để tối ưu prompt/tool declaration qua nhiều version.
 
 Điều cần học không phải là "chatbot trả lời hay". Điều cần học là vòng lặp evidence-driven:
