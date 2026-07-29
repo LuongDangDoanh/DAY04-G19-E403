@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-07-29T11:20:33",
+  "provider": "deepseek",
+  "model": "deepseek-chat",
+  "query": "Sam Altman vừa tweet gì?",
+  "text": "Let me check Sam Altman's recent tweets.\n\nTool 'timeline': {'tool': 'get_user_tweets', 'screenname': 'sama', 'items': [{'title': 'wrong', 'summary': 'wrong', 'url': 'https://x.com/sama/status/2081832600591892712', 'source': '@sama', 'date': 'Mon Jul 27 20:02:25 +0000 2026', 'metrics': {'favorites': 11179, 'retweets': 280, 'views': '2144352'}}, {'title': 'agreed feels big, i want a new kind of computer', 'summary': 'agreed feels big, i want a new kind of computer', 'url': 'https://x.com/sama/status/2081513071135346814', 'source': '@sama', 'date': 'Sun Ju",
+  "tool_calls": [
+    {
+      "name": "timeline",
+      "args": {
+        "screenname": "sama",
+        "limit": 5
+      }
+    }
+  ],
+  "tool_results": [
+    {
+      "tool": "timeline",
+      "args": {
+        "screenname": "sama",
+        "limit": 5
+      },
+      "result": {
+        "tool": "get_user_tweets",
+        "screenname": "sama",
+        "items": [
+          {
+            "title": "wrong",
+            "summary": "wrong",
+            "url": "https://x.com/sama/status/2081832600591892712",
+            "source": "@sama",
+            "date": "Mon Jul 27 20:02:25 +0000 2026",
+            "metrics": {
+              "favorites": 11179,
+              "retweets": 280,
+              "views": "2144352"
+            }
+          },
+          {
+            "title": "agreed feels big, i want a new kind of computer",
+            "summary": "agreed feels big, i want a new kind of computer",
+            "url": "https://x.com/sama/status/2081513071135346814",
+            "source": "@sama",
+            "date": "Sun Jul 26 22:52:43 +0000 2026",
+            "metrics": {
+              "favorites": 8127,
+              "retweets": 284,
+              "views": "2393625"
+            }
+          },
+          {
+            "title": "chatgpt work is remarkable, and \"work\" undersells it.",
+            "summary": "chatgpt work is remarkable, and \"work\" undersells it.\n\nfrom my phone i sent:\n\n\"use all my chat history to figure out ideas for a long weekend trip with 8 friends, plan the best three options, make a full-stack site where the 9 of us can coordinate on what we would want to do in each place and decide where to go, and then after we get to group agreement make reservations. draft an email in my gmail i can send out to my friends when the site is ready.\"\n\nit...just worked.",
+            "url": "https://x.com/sama/status/2081396796174282900",
+            "source": "@sama",
+            "date": "Sun Jul 26 15:10:41 +0000 2026",
+            "metrics": {
+              "favorites": 17409,
+              "retweets": 573,
+              "views": "3572963"
+            }
+          },
+          {
+            "title": "RT @gdb: stories like this should be told more",
+            "summary": "RT @gdb: stories like this should be told more",
+            "url": "https://x.com/sama/status/2081030523229728800",
+            "source": "@sama",
+            "date": "Sat Jul 25 14:55:15 +0000 2026",
+            "metrics": {
+              "favorites": 0,
+              "retweets": 170,
+              "views": "44766"
+            }
+          },
+          {
+            "title": "RT @pashmerepat: A billion users can now create and publish websites from their phones with ChatGPT Work. ",
+            "summary": "RT @pashmerepat: A billion users can now create and publish websites from their phones with ChatGPT Work. \n\nBut most people don’t really gr…",
+            "url": "https://x.com/sama/status/2080713767122591863",
+            "source": "@sama",
+            "date": "Fri Jul 24 17:56:34 +0000 2026",
+            "metrics": {
+              "favorites": 0,
+              "retweets": 118,
+              "views": "47743"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-07-29T11:30:29",
+  "provider": "deepseek",
+  "model": "deepseek-chat",
+  "query": "Sam Altman vừa tweet gì?",
+  "text": "Dưới đây là 5 tweet gần nhất của Sam Altman (@sama):\n\n1. **\"wrong\"** — 27/07/2026  \n   https://x.com/sama/status/2081832600591892712\n\n2. **\"agreed feels big, i want a new kind of computer\"** — 26/07/2026  \n   https://x.com/sama/status/2081513071135346814\n\n3. **Về ChatGPT Work:** \"chatgpt work is remarkable, and 'work' undersells it.\" — 26/07/2026  \n   Anh ấy kể đã dùng ChatGPT để lên kế hoạch chuyến đi cuối tuần với 8 người bạn, tạo website để cả nhóm chọn địa điểm, đặt chỗ, và soạn email — tất cả đều hoạt động.  \n   https://x.com/sama/status/2081396796174282900\n\n4. **Retweet** @gdb: \"stories like this should be told more\" — 25/07/2026  \n   https://x.com/sama/status/2081030523229728800\n\n5. **Retweet** @pashmerepat: \"A billion users can now create and publish websites from their phones with ChatGPT Work.\" — 24/07/2026  \n   https://x.com/sama/status/2080713767122591863",
+  "tool_calls": [
+    {
+      "name": "timeline",
+      "args": {
+        "screenname": "sama",
+        "limit": 5
+      }
+    }
+  ],
+  "tool_results": [
+    {
+      "tool": "timeline",
+      "args": {
+        "screenname": "sama",
+        "limit": 5
+      },
+      "result": {
+        "tool": "get_user_tweets",
+        "screenname": "sama",
+        "items": [
+          {
+            "title": "wrong",
+            "summary": "wrong",
+            "url": "https://x.com/sama/status/2081832600591892712",
+            "source": "@sama",
+            "date": "Mon Jul 27 20:02:25 +0000 2026",
+            "metrics": {
+              "favorites": 11185,
+              "retweets": 280,
+              "views": "2147177"
+            }
+          },
+          {
+            "title": "agreed feels big, i want a new kind of computer",
+            "summary": "agreed feels big, i want a new kind of computer",
+            "url": "https://x.com/sama/status/2081513071135346814",
+            "source": "@sama",
+            "date": "Sun Jul 26 22:52:43 +0000 2026",
+            "metrics": {
+              "favorites": 8127,
+              "retweets": 284,
+              "views": "2393947"
+            }
+          },
+          {
+            "title": "chatgpt work is remarkable, and \"work\" undersells it.",
+            "summary": "chatgpt work is remarkable, and \"work\" undersells it.\n\nfrom my phone i sent:\n\n\"use all my chat history to figure out ideas for a long weekend trip with 8 friends, plan the best three options, make a full-stack site where the 9 of us can coordinate on what we would want to do in each place and decide where to go, and then after we get to group agreement make reservations. draft an email in my gmail i can send out to my friends when the site is ready.\"\n\nit...just worked.",
+            "url": "https://x.com/sama/status/2081396796174282900",
+            "source": "@sama",
+            "date": "Sun Jul 26 15:10:41 +0000 2026",
+            "metrics": {
+              "favorites": 17409,
+              "retweets": 573,
+              "views": "3573772"
+            }
+          },
+          {
+            "title": "RT @gdb: stories like this should be told more",
+            "summary": "RT @gdb: stories like this should be told more",
+            "url": "https://x.com/sama/status/2081030523229728800",
+            "source": "@sama",
+            "date": "Sat Jul 25 14:55:15 +0000 2026",
+            "metrics": {
+              "favorites": 0,
+              "retweets": 170,
+              "views": "44771"
+            }
+          },
+          {
+            "title": "RT @pashmerepat: A billion users can now create and publish websites from their phones with ChatGPT Work. ",
+            "summary": "RT @pashmerepat: A billion users can now create and publish websites from their phones with ChatGPT Work. \n\nBut most people don’t really gr…",
+            "url": "https://x.com/sama/status/2080713767122591863",
+            "source": "@sama",
+            "date": "Fri Jul 24 17:56:34 +0000 2026",
+            "metrics": {
+              "favorites": 0,
+              "retweets": 118,
+              "views": "47746"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
