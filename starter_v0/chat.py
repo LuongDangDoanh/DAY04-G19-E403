@@ -94,12 +94,14 @@ def run_model_tool_loop(
         calls = response.tool_calls
         round_record: dict[str, Any] = {
             "round": round_index,
+            "status": "tool_round",
             "assistant_text": response.text,
             "tool_calls": [{"name": call.name, "args": call.args} for call in calls],
             "tool_results": [],
         }
 
         if not calls:
+            round_record["status"] = "final_answer"
             rounds.append(round_record)
             return {
                 "status": "answered",
@@ -122,6 +124,7 @@ def run_model_tool_loop(
             result = event.get("result", {})
             if isinstance(result, dict) and result.get("awaiting_user"):
                 question = result.get("question") or call.args.get("question") or "Bạn bổ sung thêm thông tin nhé."
+                round_record["status"] = "waiting_for_user"
                 rounds.append(round_record)
                 return {
                     "status": "waiting_for_user",
@@ -135,6 +138,8 @@ def run_model_tool_loop(
         rounds.append(round_record)
         working_messages.append(tool_results_message(non_clarification_events))
 
+    if rounds:
+        rounds[-1]["status"] = "max_tool_rounds"
     return {
         "status": "max_tool_rounds",
         "assistant_text": f"Stopped after {max_tool_rounds} tool rounds. Inspect the transcript for details.",

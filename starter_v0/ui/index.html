@@ -1,0 +1,1489 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Research Agent Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f1e8;
+      --bg2: #f8fbf9;
+      --panel: rgba(255, 255, 255, 0.78);
+      --panel-strong: #fffdf8;
+      --line: rgba(84, 98, 92, 0.16);
+      --text: #25302d;
+      --muted: #64706b;
+      --sage: #d8e6dd;
+      --sky: #d9e4f2;
+      --sand: #efe3d4;
+      --mint: #ecf4ef;
+      --accent: #6d8f82;
+      --accent-2: #8ea8c5;
+      --danger: #b36b63;
+      --shadow: 0 18px 40px rgba(71, 85, 73, 0.08);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(216, 230, 221, 0.72), transparent 34%),
+        radial-gradient(circle at top right, rgba(217, 228, 242, 0.72), transparent 30%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      color: var(--text);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+
+    .app {
+      min-height: 100%;
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.52);
+      backdrop-filter: blur(14px);
+      padding: 20px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 16px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--panel-strong);
+      box-shadow: var(--shadow);
+      flex: 0 0 auto;
+    }
+
+    .brand-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .side-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .side-card h2, .section h2 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      letter-spacing: 0;
+    }
+
+    .side-card p, .section p, .detail p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .side-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.68);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .pill strong { color: var(--text); font-weight: 600; }
+
+    .workspace {
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(247,250,248,0.76));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
+      min-height: 240px;
+    }
+
+    .hero-copy {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 11px;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(26px, 3vw, 38px);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      max-width: 62ch;
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 10px 0 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--text);
+      padding: 10px 14px;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      cursor: default;
+      box-shadow: 0 10px 28px rgba(71, 85, 73, 0.06);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, rgba(109,143,130,0.17), rgba(142,168,197,0.18));
+    }
+
+    .hero-art {
+      position: relative;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.22)),
+        #f3f4ee;
+      min-height: 220px;
+    }
+
+    .hero-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.96;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .searchbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.74);
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .searchbar input {
+      width: 100%;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      min-width: 0;
+    }
+
+    .tabs {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.72);
+      color: var(--muted);
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .tab.active {
+      color: var(--text);
+      background: linear-gradient(135deg, rgba(216,230,221,0.95), rgba(217,228,242,0.85));
+      border-color: rgba(109,143,130,0.26);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.74);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric .value {
+      font-size: 28px;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .metric .sub {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .section {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.6);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 16px 18px 0;
+    }
+
+    .section-body {
+      padding: 16px 18px 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+      gap: 14px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .version {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.82);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      min-height: 170px;
+    }
+
+    .version-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      border: 1px solid rgba(109,143,130,0.2);
+      background: rgba(216,230,221,0.4);
+      color: #4e6b60;
+    }
+
+    .version h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .bars {
+      display: grid;
+      gap: 8px;
+    }
+
+    .bar {
+      display: grid;
+      gap: 6px;
+    }
+
+    .bar .track {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(98, 120, 113, 0.12);
+      overflow: hidden;
+    }
+
+    .bar .fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(109,143,130,0.86), rgba(142,168,197,0.88));
+    }
+
+    .bar .row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .case-browser {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 14px;
+    }
+
+    .case-list {
+      display: grid;
+      gap: 10px;
+      max-height: 700px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .case-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.84);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .case-card.active {
+      border-color: rgba(109,143,130,0.35);
+      box-shadow: 0 14px 32px rgba(109, 143, 130, 0.12);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(236,244,239,0.9));
+    }
+
+    .case-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .case-title strong { font-size: 14px; }
+
+    .case-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.8);
+    }
+
+    .detail {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.86);
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      position: sticky;
+      top: 18px;
+    }
+
+    .detail h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .detail-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .kv {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(247,250,248,0.9);
+      display: grid;
+      gap: 4px;
+    }
+
+    .kv span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .kv strong {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .artifact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .chat-shell {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .chat-window {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.84);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-rows: auto minmax(320px, 1fr) auto;
+      min-height: 660px;
+      overflow: hidden;
+    }
+
+    .chat-evidence {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .trace-list {
+      display: grid;
+      gap: 8px;
+      max-height: 340px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .trace-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(247,250,248,0.9);
+      padding: 10px 12px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .trace-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .trace-head strong {
+      font-size: 12px;
+    }
+
+    .trace-meta {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .code-block {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.9);
+      padding: 10px 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .artifact-links {
+      display: grid;
+      gap: 8px;
+    }
+
+    .artifact-link {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.88);
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chat-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: rgba(247,250,248,0.82);
+    }
+
+    .chat-head strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .chat-head span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .chat-log {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      overflow: auto;
+    }
+
+    .bubble {
+      width: fit-content;
+      max-width: min(640px, 92%);
+      border-radius: 16px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 10px 22px rgba(71, 85, 73, 0.05);
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .bubble.user {
+      justify-self: end;
+      margin-left: auto;
+      background: linear-gradient(135deg, rgba(216,230,221,0.85), rgba(236,244,239,0.95));
+      border-color: rgba(109,143,130,0.22);
+    }
+
+    .bubble.bot {
+      justify-self: start;
+      margin-right: auto;
+      background: rgba(255,255,255,0.95);
+    }
+
+    .bubble-content {
+      display: grid;
+      gap: 8px;
+    }
+
+    .bubble-content p,
+    .bubble-content ul,
+    .bubble-content ol {
+      margin: 0;
+    }
+
+    .bubble-content ul,
+    .bubble-content ol {
+      padding-left: 20px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .bubble-content a {
+      color: #526f91;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    .bubble-content strong {
+      font-weight: 650;
+    }
+
+    .bubble .meta {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .bubble.pending {
+      color: var(--muted);
+      background: rgba(247,250,248,0.92);
+    }
+
+    .composer {
+      padding: 14px;
+      border-top: 1px solid var(--line);
+      background: rgba(247,250,248,0.82);
+      display: grid;
+      gap: 10px;
+    }
+
+    .composer-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    .composer input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.92);
+      padding: 12px 14px;
+      outline: none;
+      color: var(--text);
+      min-width: 0;
+    }
+
+    .composer button {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(109,143,130,0.18), rgba(142,168,197,0.18));
+      padding: 12px 16px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .composer button:disabled,
+    .composer input:disabled {
+      opacity: 0.58;
+    }
+
+    .quick-prompts {
+      display: grid;
+      gap: 10px;
+    }
+
+    .quick-prompts button {
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.84);
+      padding: 12px 14px;
+      color: var(--text);
+      cursor: pointer;
+      line-height: 1.4;
+      box-shadow: var(--shadow);
+    }
+
+    .chat-side {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .artifact {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.82);
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .artifact code, .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    .warn {
+      border: 1px solid rgba(179, 107, 99, 0.22);
+      background: rgba(255, 244, 241, 0.84);
+      color: #8a524b;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 12px;
+      padding-top: 2px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .hero,
+      .toolbar,
+      .grid-2,
+      .case-browser {
+        grid-template-columns: 1fr;
+      }
+      .chat-shell {
+        grid-template-columns: 1fr;
+      }
+      .chat-evidence {
+        grid-template-columns: 1fr;
+      }
+      .metric-grid,
+      .grid-3,
+      .artifact-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .detail { position: static; }
+    }
+
+    @media (max-width: 720px) {
+      .workspace { padding: 14px; }
+      .hero-copy, .section-body, .section-head { padding-left: 14px; padding-right: 14px; }
+      .metric-grid,
+      .grid-3,
+      .artifact-grid,
+      .side-grid {
+        grid-template-columns: 1fr;
+      }
+      .tabs, .hero-actions {
+        width: 100%;
+      }
+      .tab, .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><img src="./hero.png" alt="Illustration" /></div>
+        <div>
+          <h1>Research Agent Dashboard</h1>
+          <p>UI cho day04 research lab</p>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="side-card">
+          <h2>Snapshot</h2>
+          <p>Routing đã khóa ở v5. Base và group đều đạt 100% trên eval thật.</p>
+          <div class="side-grid">
+            <div class="pill"><span>Base</span><strong>20/20</strong></div>
+            <div class="pill"><span>Group</span><strong>10/10</strong></div>
+            <div class="pill"><span>Routing</span><strong>100%</strong></div>
+            <div class="pill"><span>Args</span><strong>100%</strong></div>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <h2>Artifact set</h2>
+          <p>Prompt, tool schema, eval group, version log, report và run JSON đều được giữ lại làm chứng cứ.</p>
+          <div class="stack" style="margin-top:10px;">
+            <div class="pill"><span>Report</span><strong>ARTIFACT</strong></div>
+            <div class="pill"><span>Prompt</span><strong>LOCKED</strong></div>
+            <div class="pill"><span>Tools</span><strong>DECLARED</strong></div>
+            <div class="pill"><span>Runs</span><strong>6 FILES</strong></div>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <h2>Manual review</h2>
+          <p>Routing pass không chứng minh API live thành công. Các lỗi 403 từ Twitter/Telegram đã được ghi chú trong report.</p>
+          <div class="footer-note">Use the runs for evidence, not just the summary.</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <section class="hero">
+        <div class="hero-copy">
+          <div>
+            <div class="eyebrow">Day 04 Research Agent</div>
+            <h2>Agent control surface, nhẹ, rõ, và đủ dữ liệu để kiểm tra hành vi thật.</h2>
+            <p>
+              Giao diện này tập trung vào điều quan trọng nhất của dự án: tool routing, boundary cases,
+              version history, và chứng cứ eval. Không phải landing page. Đây là workspace để đọc, lọc, và so sánh.
+            </p>
+          </div>
+          <div class="hero-actions">
+            <span class="btn primary">Base 20/20</span>
+            <span class="btn">Group 10/10</span>
+            <span class="btn">v5 locked</span>
+          </div>
+        </div>
+        <div class="hero-art">
+          <img src="./hero.png" alt="Soft research desk illustration" />
+        </div>
+      </section>
+
+      <section class="toolbar">
+        <label class="searchbar" aria-label="Search cases">
+          <span class="mono">/</span>
+          <input id="search" type="search" placeholder="Tìm case, tool, hay failure note..." />
+        </label>
+        <div class="tabs" role="tablist" aria-label="Views">
+          <button class="tab active" data-tab="overview">Overview</button>
+          <button class="tab" data-tab="cases">Cases</button>
+          <button class="tab" data-tab="runs">Runs</button>
+          <button class="tab" data-tab="artifacts">Artifacts</button>
+          <button class="tab" data-tab="chat">Chatbot</button>
+        </div>
+      </section>
+
+      <section class="metric-grid">
+        <div class="metric"><div class="label">Base eval</div><div class="value">20/20</div><div class="sub">provider_error = 0</div></div>
+        <div class="metric"><div class="label">Group eval</div><div class="value">10/10</div><div class="sub">team-authored cases</div></div>
+        <div class="metric"><div class="label">Tool routing</div><div class="value">100%</div><div class="sub">all base + group</div></div>
+        <div class="metric"><div class="label">Argument accuracy</div><div class="value">100%</div><div class="sub">final v5 runs</div></div>
+        <div class="metric"><div class="label">Base tool errors</div><div class="value">8</div><div class="sub">403s in live APIs</div></div>
+        <div class="metric"><div class="label">Group tool errors</div><div class="value">2</div><div class="sub">manual review noted</div></div>
+      </section>
+
+      <section class="section" data-panel="overview">
+        <div class="section-head">
+          <h2>Version ladder</h2>
+          <p>v1 đến v5 cho thấy cải thiện từ baseline đến rule-based boundary control.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-3" id="versions"></div>
+        </div>
+      </section>
+
+      <section class="section hidden" data-panel="cases">
+        <div class="section-head">
+          <h2>Case browser</h2>
+          <p>Chọn case để xem mục tiêu, tool dự kiến, và ghi chú hành vi.</p>
+        </div>
+        <div class="section-body case-browser">
+          <div class="case-list" id="caseList"></div>
+          <div class="detail" id="caseDetail"></div>
+        </div>
+      </section>
+
+      <section class="section hidden" data-panel="runs">
+        <div class="section-head">
+          <h2>Run inspector</h2>
+          <p>Tổng hợp kết quả thật từ base và group, kèm notes về execution-time 403.</p>
+        </div>
+        <div class="section-body grid-2">
+          <div class="stack">
+            <div class="artifact">
+              <div class="version-top">
+                <strong>Base run</strong>
+                <span class="badge">v5</span>
+              </div>
+              <div class="bars">
+                <div class="bar"><div class="row"><span>Case accuracy</span><span>100%</span></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+                <div class="bar"><div class="row"><span>Routing</span><span>100%</span></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+                <div class="bar"><div class="row"><span>Arguments</span><span>100%</span></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+              </div>
+              <div class="warn">8 live tool calls returned 403 at execution time. Routing still passed and was recorded in the run JSON.</div>
+              <div class="mono">runs/v5_B_base_openrouter_20260729T111055749827.json</div>
+            </div>
+            <div class="artifact">
+              <div class="version-top">
+                <strong>Group run</strong>
+                <span class="badge">v5</span>
+              </div>
+              <div class="bars">
+                <div class="bar"><div class="row"><span>Case accuracy</span><span>100%</span></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+                <div class="bar"><div class="row"><span>Routing</span><span>100%</span></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+                <div class="bar"><div class="row"><span>Arguments</span><span>100%</span></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+              </div>
+              <div class="warn">2 live tool calls returned 403 at execution time, including Telegram send. The report flags this for manual review.</div>
+              <div class="mono">runs/v5_B_group_openrouter_20260729T111358933916.json</div>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="artifact">
+              <strong>Observed live errors</strong>
+              <p style="margin-top:6px;">Twitter/RapidAPI and Telegram API both surfaced 403 responses in some runs.</p>
+              <div class="stack" style="margin-top:10px;">
+                <div class="pill"><span>timeline</span><strong>HTTP 403</strong></div>
+                <div class="pill"><span>social_search</span><strong>HTTP 403</strong></div>
+                <div class="pill"><span>send</span><strong>HTTP 403</strong></div>
+              </div>
+            </div>
+            <div class="artifact">
+              <strong>Why this still passes</strong>
+              <p style="margin-top:6px;">The eval scores routing and arguments only. External tool reliability is a separate operational concern.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section hidden" data-panel="artifacts">
+        <div class="section-head">
+          <h2>Artifact index</h2>
+          <p>Links to the report and evidence files used to validate the agent.</p>
+        </div>
+        <div class="section-body artifact-grid">
+          <div class="artifact">
+            <strong>Report</strong>
+            <p>Human-readable summary with version evidence and failure analysis.</p>
+            <code><a href="../artifacts/REPORT.md">artifacts/REPORT.md</a></code>
+          </div>
+          <div class="artifact">
+            <strong>System prompt</strong>
+            <p>Routing and boundary rules for the agent.</p>
+            <code><a href="../artifacts/system_prompt.md">artifacts/system_prompt.md</a></code>
+          </div>
+          <div class="artifact">
+            <strong>Tool schema</strong>
+            <p>Tool declarations and argument hints.</p>
+            <code><a href="../artifacts/tools.yaml">artifacts/tools.yaml</a></code>
+          </div>
+          <div class="artifact">
+            <strong>Version log</strong>
+            <p>Iteration history from v1 to v5.</p>
+            <code><a href="../artifacts/version_log.csv">artifacts/version_log.csv</a></code>
+          </div>
+          <div class="artifact">
+            <strong>Base run</strong>
+            <p>Final verified run JSON for the base eval.</p>
+            <code><a href="../runs/v5_B_base_openrouter_20260729T111055749827.json">runs/v5_B_base_openrouter_20260729T111055749827.json</a></code>
+          </div>
+          <div class="artifact">
+            <strong>Group run</strong>
+            <p>Final verified run JSON for the team eval set.</p>
+            <code><a href="../runs/v5_B_group_openrouter_20260729T111358933916.json">runs/v5_B_group_openrouter_20260729T111358933916.json</a></code>
+          </div>
+        </div>
+      </section>
+
+      <section class="section hidden" data-panel="chat">
+        <div class="section-head">
+          <h2>Chatbot</h2>
+          <p>Conversational surface for the agent story, with prompt quick actions and project-aware replies.</p>
+        </div>
+        <div class="section-body chat-shell">
+          <div class="chat-side">
+            <div class="artifact">
+              <strong>Quick prompts</strong>
+              <p style="margin-top:6px;">Dùng để hỏi nhanh về agent, runs, boundary, hoặc artifact.</p>
+              <div class="quick-prompts" id="quickPrompts"></div>
+            </div>
+            <div class="artifact">
+              <strong>Chat scope</strong>
+              <p style="margin-top:6px;">Agent trả lời ngắn gọn, bám vào report và run JSON đã tạo trong repo.</p>
+            </div>
+          </div>
+          <div class="chat-window">
+            <div class="chat-head">
+              <div>
+                <strong>Project Chatbot</strong>
+                <span>Ask about evals, tools, versions, or demo prompts</span>
+              </div>
+              <span class="badge">local only</span>
+            </div>
+            <div class="chat-log" id="chatLog"></div>
+            <div class="composer">
+              <div class="composer-row">
+                <input id="chatInput" type="text" placeholder="Nhập câu hỏi..." />
+                <button id="chatSend" type="button">Send</button>
+              </div>
+              <div class="footer-note">Chatbot này gọi backend Python tại `/api/chat`, sau đó agent tự chọn tool research phù hợp.</div>
+            </div>
+          </div>
+          <div class="chat-evidence">
+            <div class="artifact">
+              <strong>Final request / response</strong>
+              <p style="margin-top:6px;">Câu cuối cùng gửi vào agent và câu trả lời cuối cùng trả về.</p>
+              <div style="display:grid; gap:10px; margin-top:10px;">
+                <div>
+                  <div class="footer-note">Request</div>
+                  <div class="code-block" id="lastRequest">Chưa có lượt chat.</div>
+                </div>
+                <div>
+                  <div class="footer-note">Response</div>
+                  <div class="code-block" id="lastResponse">Chưa có lượt chat.</div>
+                </div>
+              </div>
+            </div>
+            <div class="artifact">
+              <strong>Tool trace</strong>
+              <p style="margin-top:6px;">Mỗi round: tool name, args, status, result/error.</p>
+              <div class="trace-list" id="toolTrace"></div>
+            </div>
+            <div class="artifact">
+              <strong>Transcript / run / artifacts</strong>
+              <p style="margin-top:6px;">Transcript thật được ghi ra file, và run/artifact links vẫn nằm trong repo.</p>
+              <div class="artifact-links" id="evidenceLinks"></div>
+            </div>
+            <div class="artifact">
+              <strong>Round / status summary</strong>
+              <p style="margin-top:6px;">Dùng để nhìn nhanh chatbot vừa làm gì trong lượt hiện tại.</p>
+              <div class="stack" style="margin-top:10px;">
+                <div class="pill"><span>Status</span><strong id="chatStatus">idle</strong></div>
+                <div class="pill"><span>Transcript</span><strong id="chatTranscriptId">-</strong></div>
+                <div class="pill"><span>Artifact</span><strong id="chatArtifactVersion">v5</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const versions = [
+      {
+        id: 'v1',
+        title: 'Baseline cleanup',
+        before: 0.70,
+        after: 0.70,
+        note: 'Make routing and boundary rules explicit.',
+        run: 'runs/v1_B_base_openrouter_20260729T105701444658.json'
+      },
+      {
+        id: 'v2',
+        title: 'Explicit routing rewrite',
+        before: 0.70,
+        after: 0.00,
+        note: 'Overfit rewrite; useful as a negative step in the version story.',
+        run: 'runs/v2_B_base_openrouter_20260729T110347884988.json'
+      },
+      {
+        id: 'v3',
+        title: 'Clarify boundary tuning',
+        before: 0.00,
+        after: 0.90,
+        note: 'Separated missing content from confirmation for send actions.',
+        run: 'runs/v3_B_base_openrouter_20260729T110654304016.json'
+      },
+      {
+        id: 'v4',
+        title: 'Deictic send example',
+        before: 0.90,
+        after: 0.95,
+        note: 'Added the "bản tin này" case directly into the rules.',
+        run: 'runs/v4_B_base_openrouter_20260729T110904312972.json'
+      },
+      {
+        id: 'v5',
+        title: 'Final lock',
+        before: 0.95,
+        after: 1.00,
+        note: 'Locked the last ambiguous clarify/send behaviors.',
+        run: 'runs/v5_B_base_openrouter_20260729T111055749827.json'
+      }
+    ];
+
+    const cases = [
+      ['G01_policy_privacy', 'policy', 'data_privacy', 'policy privacy lookup', 'PASS'],
+      ['G02_paper_search', 'papers', 'retrieval augmented generation', 'paper search', 'PASS'],
+      ['G03_read_arxiv_id', 'paper_text', '1706.03762', 'read arXiv id', 'PASS'],
+      ['G04_missing_send_content', 'clarify', 'text', 'missing send content', 'PASS'],
+      ['G05_no_tool_math', 'none', 'refuse', 'out of scope math', 'PASS'],
+      ['GM01_policy_carry_area', 'policy', 'external_publishing', 'carry policy area', 'PASS'],
+      ['GM02_social_to_timeline_correction', 'timeline', 'OpenAI', 'topic -> account correction', 'PASS'],
+      ['GM03_confirmed_send', 'send', 'confirmed=true', 'confirmed send', 'PASS'],
+      ['GM04_url_correction', 'fetch', 'openai.com/research', 'URL correction', 'PASS'],
+      ['GM05_news_topic_correction', 'lookup', 'chip bán dẫn / week', 'topic correction with timeframe carry', 'PASS'],
+      ['R01_user_tweets_routing', 'timeline', 'sama', 'tweet by handle routing', 'PASS'],
+      ['R10_missing_handle', 'clarify', 'text', 'missing handle should clarify', 'PASS'],
+      ['R12_confirm_before_send', 'clarify', 'yes_no', 'confirm before Telegram send', 'PASS']
+    ].map(([id, tool, expect, note, result]) => ({ id, tool, expect, note, result }));
+
+    const caseList = document.getElementById('caseList');
+    const caseDetail = document.getElementById('caseDetail');
+    const versionsContainer = document.getElementById('versions');
+    const chatLog = document.getElementById('chatLog');
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSend');
+    const quickPrompts = document.getElementById('quickPrompts');
+    const lastRequest = document.getElementById('lastRequest');
+    const lastResponse = document.getElementById('lastResponse');
+    const toolTrace = document.getElementById('toolTrace');
+    const evidenceLinks = document.getElementById('evidenceLinks');
+    const chatStatus = document.getElementById('chatStatus');
+    const chatTranscriptId = document.getElementById('chatTranscriptId');
+    const chatArtifactVersion = document.getElementById('chatArtifactVersion');
+    const search = document.getElementById('search');
+    const tabs = [...document.querySelectorAll('.tab')];
+    const panels = [...document.querySelectorAll('[data-panel]')];
+    let selectedCase = cases[0];
+    let activeTab = 'overview';
+    let lastChatRecord = null;
+    const chatState = [
+      { role: 'bot', text: 'Mình là Research Agent thật của dự án này. Hỏi tin web, tweet, URL, paper hoặc policy; mình sẽ gọi tool khi cần.', meta: 'ready' }
+    ];
+
+    const promptList = [
+      'Tin AI hôm nay có gì nổi bật?',
+      'Mọi người đang bàn gì về GPT-5 trên Twitter?',
+      'Tóm tắt bài này: https://openai.com/research',
+      'Theo policy nội bộ, có được đưa PII vào prompt không?',
+      'Tìm 3 paper arXiv về retrieval augmented generation'
+    ];
+
+    function pct(value) {
+      return Math.round(value * 100) + '%';
+    }
+
+    function renderVersions() {
+      versionsContainer.innerHTML = versions.map(v => `
+        <article class="version">
+          <div class="version-top">
+            <h3>${v.id}</h3>
+            <span class="badge">${pct(v.after)}</span>
+          </div>
+          <div class="mono">${v.title}</div>
+          <p>${v.note}</p>
+          <div class="bars">
+            <div class="bar">
+              <div class="row"><span>Before</span><span>${pct(v.before)}</span></div>
+              <div class="track"><div class="fill" style="width:${pct(v.before)}"></div></div>
+            </div>
+            <div class="bar">
+              <div class="row"><span>After</span><span>${pct(v.after)}</span></div>
+              <div class="track"><div class="fill" style="width:${pct(v.after)}"></div></div>
+            </div>
+          </div>
+          <div class="mono">${v.run}</div>
+        </article>
+      `).join('');
+    }
+
+    function renderCases() {
+      const q = search.value.trim().toLowerCase();
+      const filtered = cases.filter(c => {
+        if (!q) return true;
+        return [c.id, c.tool, c.expect, c.note, c.result].join(' ').toLowerCase().includes(q);
+      });
+
+      caseList.innerHTML = filtered.map(c => `
+        <article class="case-card ${selectedCase.id === c.id ? 'active' : ''}" data-case="${c.id}">
+          <div class="case-title">
+            <strong>${c.id}</strong>
+            <span class="badge">${c.result}</span>
+          </div>
+          <div class="case-meta">
+            <span class="chip">${c.tool}</span>
+            <span class="chip">${c.expect}</span>
+          </div>
+          <p>${c.note}</p>
+        </article>
+      `).join('');
+
+      [...document.querySelectorAll('.case-card')].forEach(el => {
+        el.addEventListener('click', () => {
+          selectedCase = cases.find(c => c.id === el.dataset.case) || selectedCase;
+          renderCases();
+          renderCaseDetail();
+        });
+      });
+    }
+
+    function renderCaseDetail() {
+      caseDetail.innerHTML = `
+        <div class="version-top">
+          <div>
+            <h3>${selectedCase.id}</h3>
+            <p>${selectedCase.note}</p>
+          </div>
+          <span class="badge">${selectedCase.result}</span>
+        </div>
+        <div class="detail-grid">
+          <div class="kv"><span>Expected tool</span><strong>${selectedCase.tool}</strong></div>
+          <div class="kv"><span>Expected boundary</span><strong>${selectedCase.expect}</strong></div>
+          <div class="kv"><span>Outcome</span><strong>Included in the final verified eval set</strong></div>
+        </div>
+        <div class="warn">
+          This detail pane is intentionally tied to the project artifacts rather than mock content.
+          It is meant for inspection and version review, not a marketing surface.
+        </div>
+      `;
+    }
+
+    function appendChat(role, text, meta = '') {
+      chatState.push({ role, text, meta });
+      renderChat();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function inlineFormat(value) {
+      return escapeHtml(value)
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+    }
+
+    function formatMessage(text, role) {
+      const safeRole = role.split(' ')[0];
+      if (safeRole === 'user') {
+        return `<div class="bubble-content"><p>${inlineFormat(text)}</p></div>`;
+      }
+
+      const blocks = String(text).trim().split(/\n{2,}/).filter(Boolean);
+      const html = blocks.map(block => {
+        const lines = block.split('\n').filter(line => line.trim());
+        const isOrdered = lines.every(line => /^\s*\d+\.\s+/.test(line));
+        const isBullet = lines.every(line => /^\s*[-*]\s+/.test(line));
+
+        if (isOrdered || isBullet) {
+          const tag = isOrdered ? 'ol' : 'ul';
+          const items = lines.map(line => {
+            const content = line.replace(/^\s*(?:\d+\.|[-*])\s+/, '');
+            return `<li>${inlineFormat(content)}</li>`;
+          }).join('');
+          return `<${tag}>${items}</${tag}>`;
+        }
+
+        return lines.map(line => `<p>${inlineFormat(line)}</p>`).join('');
+      }).join('');
+
+      return `<div class="bubble-content">${html || '<p></p>'}</div>`;
+    }
+
+    function renderChat() {
+      chatLog.innerHTML = chatState.map(item => `
+        <div class="bubble ${item.role}">
+          ${formatMessage(item.text, item.role)}
+          ${item.meta ? `<div class="meta">${escapeHtml(item.meta)}</div>` : ''}
+        </div>
+      `).join('');
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    function visibleHistory() {
+      return chatState
+        .filter(item => item.role === 'user' || item.role === 'bot')
+        .map(item => ({
+          role: item.role === 'bot' ? 'assistant' : 'user',
+          content: item.text
+        }))
+        .slice(-10);
+    }
+
+    function toolSummary(data) {
+      const events = data.tool_events || [];
+      if (!events.length) return data.status || 'answered';
+      return events.map(event => {
+        const result = event.result || {};
+        const status = result.error ? `error: ${result.error}` : 'ok';
+        return `${event.tool}(${status})`;
+      }).join(' · ');
+    }
+
+    function formatJson(value) {
+      return JSON.stringify(value, null, 2);
+    }
+
+    function renderEvidence() {
+      if (!lastChatRecord) {
+        lastRequest.textContent = 'Chưa có lượt chat.';
+        lastResponse.textContent = 'Chưa có lượt chat.';
+        toolTrace.innerHTML = '<div class="trace-item"><div class="trace-meta">Chưa có trace.</div></div>';
+        evidenceLinks.innerHTML = `
+          <div class="artifact-link"><span>Transcript</span><strong>-</strong></div>
+          <div class="artifact-link"><span>Base run</span><strong><a href="../runs/v5_B_base_openrouter_20260729T111055749827.json">open</a></strong></div>
+          <div class="artifact-link"><span>Group run</span><strong><a href="../runs/v5_B_group_openrouter_20260729T111358933916.json">open</a></strong></div>
+          <div class="artifact-link"><span>Report</span><strong><a href="../artifacts/REPORT.md">open</a></strong></div>
+        `;
+        chatStatus.textContent = 'idle';
+        chatTranscriptId.textContent = '-';
+        chatArtifactVersion.textContent = 'v5';
+        return;
+      }
+
+      lastRequest.textContent = lastChatRecord.request_text || '(empty)';
+      lastResponse.textContent = lastChatRecord.response_text || '(empty)';
+      chatStatus.textContent = lastChatRecord.status || 'answered';
+      chatTranscriptId.textContent = lastChatRecord.transcript_id || '-';
+      chatArtifactVersion.textContent = lastChatRecord.artifact_version || 'v5';
+
+      const traceItems = [];
+      (lastChatRecord.rounds || []).forEach(round => {
+        traceItems.push(`
+          <div class="trace-item">
+            <div class="trace-head">
+              <strong>Round ${round.round}</strong>
+              <span class="badge">${escapeHtml(round.status || (round.tool_calls?.length ? 'tool call' : 'final answer'))}</span>
+            </div>
+            <div class="trace-meta">assistant_text: ${escapeHtml(round.assistant_text || '')}</div>
+            ${(round.tool_calls || []).map((call, index) => {
+              const result = (round.tool_results || [])[index] || {};
+              const status = result.result && result.result.error ? `error: ${result.result.error}` : 'ok';
+              return `
+                <div class="code-block" style="max-height:none;">
+tool: ${call.name}
+args: ${formatJson(call.args || {})}
+status: ${status}
+result: ${formatJson(result.result || {})}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `);
+      });
+      toolTrace.innerHTML = traceItems.join('') || '<div class="trace-item"><div class="trace-meta">No tool calls.</div></div>';
+
+      evidenceLinks.innerHTML = `
+        <div class="artifact-link"><span>Transcript</span><strong>${lastChatRecord.transcript_path ? `<a href="../transcripts/${encodeURIComponent(lastChatRecord.transcript_path.split('/').pop())}">open</a>` : '-'}</strong></div>
+        <div class="artifact-link"><span>Run JSON</span><strong><a href="../runs/v5_B_base_openrouter_20260729T111055749827.json">base v5</a></strong></div>
+        <div class="artifact-link"><span>Group JSON</span><strong><a href="../runs/v5_B_group_openrouter_20260729T111358933916.json">group v5</a></strong></div>
+        <div class="artifact-link"><span>Report</span><strong><a href="../artifacts/REPORT.md">report</a></strong></div>
+      `;
+    }
+
+    async function sendChat() {
+      const value = chatInput.value.trim();
+      if (!value) return;
+      appendChat('user', value, 'you');
+      chatInput.value = '';
+      if (activeTab !== 'chat') setTab('chat');
+      chatInput.disabled = true;
+      chatSend.disabled = true;
+      chatState.push({ role: 'bot pending', text: 'Đang gọi research agent và tool nếu cần...', meta: 'working' });
+      renderChat();
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: value, history: visibleHistory().slice(0, -1) })
+        });
+        const data = await response.json();
+        chatState.pop();
+        if (!response.ok) {
+          appendChat('bot', `Không gọi được backend: ${data.error || response.status}\n${data.message || ''}`.trim(), 'backend error');
+          lastChatRecord = null;
+          renderEvidence();
+          return;
+        }
+        appendChat('bot', data.answer || 'Agent không trả về nội dung.', toolSummary(data));
+        lastChatRecord = data;
+        renderEvidence();
+      } catch (error) {
+        chatState.pop();
+        appendChat('bot', `Không kết nối được /api/chat. Hãy chạy server bằng python ui_server.py.\n${error.message}`, 'network error');
+        lastChatRecord = null;
+        renderEvidence();
+      } finally {
+        chatInput.disabled = false;
+        chatSend.disabled = false;
+        chatInput.focus();
+      }
+    }
+
+    function setTab(tab) {
+      activeTab = tab;
+      tabs.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+      panels.forEach(panel => panel.classList.toggle('hidden', panel.dataset.panel !== tab));
+    }
+
+    tabs.forEach(btn => btn.addEventListener('click', () => setTab(btn.dataset.tab)));
+    search.addEventListener('input', () => {
+      if (activeTab !== 'cases') setTab('cases');
+      renderCases();
+    });
+
+    promptList.forEach(prompt => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = prompt;
+      button.addEventListener('click', () => {
+        chatInput.value = prompt;
+        sendChat();
+      });
+      quickPrompts.appendChild(button);
+    });
+    chatSend.addEventListener('click', sendChat);
+    chatInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') sendChat();
+    });
+
+    renderVersions();
+    renderCases();
+    renderCaseDetail();
+    renderChat();
+    renderEvidence();
+    setTab('overview');
+  </script>
+</body>
+</html>

@@ -9,55 +9,55 @@
 tools:
   # ---------------- Core tools ----------------
   - name: clarify
-    description: "Gửi một câu hỏi cho người dùng."
+    description: "Hỏi lại người dùng. Thiếu account/URL/nội dung hoàn toàn -> response_type text. Gửi/post/publish nội dung đã nhắc tới như 'bản tin này' -> response_type yes_no."
     parameters:
       type: object
       properties:
-        question: {type: string, default: "", description: "Câu hỏi"}
-        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Kiểu trả lời"}
+        question: {type: string, default: "", description: "Câu hỏi ngắn, cụ thể về thông tin còn thiếu hoặc xác nhận cần thiết"}
+        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Use yes_no for 'Đăng bản tin này lên Telegram giúp mình'. Use text for missing account, missing URL, or no content at all."}
         options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn"}
       required: [question]
 
   - name: timeline
-    description: "Lấy các bài đăng gần đây."
+    description: "Lấy tweet/bài đăng gần đây CỦA một account cụ thể. Chỉ dùng khi biết screenname/handle; nếu thiếu account thì gọi clarify. Map tên phổ biến: Sam Altman=sama, Elon Musk=elonmusk, Andrej Karpathy=karpathy."
     parameters:
       type: object
       properties:
-        screenname: {type: string, default: "", description: "Tên tài khoản"}
-        limit: {type: integer, default: 5, description: "Số lượng"}
+        screenname: {type: string, default: "", description: "Handle không có @, ví dụ sama, elonmusk, karpathy"}
+        limit: {type: integer, default: 5, description: "Số tweet cần lấy; dùng số người dùng yêu cầu, mặc định 5"}
       required: [screenname]
 
   - name: social_search
-    description: "Tìm trên mạng xã hội."
+    description: "Tìm tweet/bài đăng xã hội THEO CHỦ ĐỀ hoặc từ khóa, không phải timeline của một account. Không dùng khi query rỗng hoặc người dùng chỉ nói 'tweet mới nhất' mà thiếu account; khi đó gọi clarify."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Từ khóa"}
-        search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Cách sắp xếp"}
-        limit: {type: integer, default: 5, description: "Số lượng"}
+        query: {type: string, default: "", description: "Chủ đề/từ khóa cần tìm trên mạng xã hội"}
+        search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Latest mặc định; Top cho top/phổ biến/viral"}
+        limit: {type: integer, default: 5, description: "Số kết quả cần lấy, mặc định 5"}
       required: [query]
 
   - name: lookup
-    description: "Tra cứu thông tin trên internet."
+    description: "Tra cứu web bằng Tavily cho tin tức/current events hoặc thông tin internet chung. Dùng topic=news cho tin tức; timeframe day/week/month/year theo hôm nay/tuần/tháng/năm."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Truy vấn"}
-        topic: {type: string, enum: [general, news], default: "general", description: "Phân loại"}
-        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "Khoảng thời gian"}
+        query: {type: string, default: "", description: "Truy vấn ngắn tập trung vào chủ đề, ví dụ AI, robotics, OpenAI"}
+        topic: {type: string, enum: [general, news], default: "general", description: "news cho tin tức/current events; general cho thông tin web không thời sự"}
+        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "day=hôm nay/today; week=tuần này; month=tháng này; year=năm nay"}
         max_results: {type: integer, default: 5, description: "Số kết quả"}
       required: [query]
 
   - name: fetch
-    description: "Lấy nội dung từ một địa chỉ."
+    description: "Đọc/tóm tắt một URL cụ thể đã được người dùng cung cấp. Nếu người dùng nói 'bài này' nhưng không có URL, gọi clarify thay vì đoán link."
     parameters:
       type: object
       properties:
-        url: {type: string, default: "", description: "Địa chỉ"}
+        url: {type: string, default: "", description: "URL chính xác cần đọc"}
       required: [url]
 
   - name: format
-    description: "Trình bày dữ liệu đã có thành văn bản."
+    description: "Định dạng các item đã có thành digest, bullets, sections hoặc thread. Không dùng để tìm dữ liệu mới."
     parameters:
       type: object
       properties:
@@ -172,16 +172,16 @@ tools:
 
   # ---------------- Bonus tools ----------------
   - name: send
-    description: "Gửi một đoạn văn bản đi."
+    description: "Gửi nội dung lên Telegram. Chỉ gọi khi người dùng đã xác nhận rõ nội dung và quyền gửi. Nếu nói 'bản tin này/nội dung này' nhưng chưa xác nhận, gọi clarify yes_no; nếu không có nội dung nào, gọi clarify text."
     parameters:
       type: object
       properties:
         text: {type: string, default: "", description: "Nội dung"}
-        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+        confirmed: {type: boolean, default: false, description: "Chỉ true sau khi người dùng xác nhận rõ ràng trong hội thoại"}
       required: [text]
 
   - name: policy
-    description: "Tìm trong tài liệu nội bộ."
+    description: "Tìm trong company policy nội bộ: AI research, citation, privacy, publishing, tool usage. Dùng cho quy định nội bộ thay vì web."
     parameters:
       type: object
       properties:
@@ -191,7 +191,7 @@ tools:
       required: [query]
 
   - name: papers
-    description: "Tìm bài báo khoa học."
+    description: "Tìm bài báo khoa học trên arXiv theo chủ đề/từ khóa. Dùng cho paper/research literature, không dùng cho tin tức web thường."
     parameters:
       type: object
       properties:
@@ -201,7 +201,7 @@ tools:
       required: [query]
 
   - name: paper_text
-    description: "Lấy nội dung text của một bài báo."
+    description: "Đọc text từ một bài arXiv khi có arXiv URL hoặc arXiv id cụ thể."
     parameters:
       type: object
       properties:

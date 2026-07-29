@@ -1,7 +1,118 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Template để NHÓM tự viết đúng 10 case: 5 single-turn dùng query và 5 multi-turn dùng turns. Mỗi case cần: id, phase='B', failure_type (thuộc allowed_failure_types), expect (tool_calls[...] hoặc no_tool=true), và metadata.what_it_tests. File để trống có chủ đích vì mỗi nhóm phải tự thiết kế các case này.",
+  "description": "Team-authored eval set: 5 single-turn and 5 multi-turn cases for the research agent.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_policy_privacy",
+      "phase": "B",
+      "suite": "group",
+      "query": "Theo policy nội bộ, có được đưa PII khách hàng vào prompt để nghiên cứu AI không?",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "policy", "args": {"policy_area": "data_privacy"}}]},
+      "metadata": {"what_it_tests": "Internal company policy request should use policy with the data_privacy area."}
+    },
+    {
+      "id": "G02_paper_search",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tìm 3 paper arXiv mới liên quan retrieval augmented generation",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "papers", "args": {"query": "retrieval augmented generation", "max_results": 3}}]},
+      "metadata": {"what_it_tests": "Academic literature search should route to papers and preserve max_results."}
+    },
+    {
+      "id": "G03_read_arxiv_id",
+      "phase": "B",
+      "suite": "group",
+      "query": "Đọc giúp mình paper arXiv 1706.03762, tối đa 2 trang",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "paper_text", "args": {"arxiv_url": "1706.03762", "max_pages": 2}}]},
+      "metadata": {"what_it_tests": "A concrete arXiv id should use paper_text, not web lookup or papers search."}
+    },
+    {
+      "id": "G04_missing_send_content",
+      "phase": "B",
+      "suite": "group",
+      "query": "Gửi lên Telegram giúp mình, nhưng mình chưa đưa nội dung cần gửi",
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"what_it_tests": "Send action with explicitly missing content should ask for text instead of calling send."}
+    },
+    {
+      "id": "G05_no_tool_math",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tính đạo hàm của x^3 + 2x giúp mình",
+      "failure_type": "out_of_scope",
+      "expect": {"no_tool": true, "behavior": "refuse"},
+      "metadata": {"what_it_tests": "Unrelated math homework should not trigger research tools."}
+    },
+    {
+      "id": "GM01_policy_carry_area",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tra policy nội bộ về việc publish nghiên cứu ra ngoài"},
+        {"role": "user", "content": "Cụ thể là có cần approval không?"},
+        {"role": "user", "content": "Vẫn trong external publishing nhé"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "policy", "args": {"policy_area": "external_publishing"}}]},
+      "metadata": {"what_it_tests": "Multi-turn policy lookup should carry the external_publishing area."}
+    },
+    {
+      "id": "GM02_social_to_timeline_correction",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm tweet về OpenAI"},
+        {"role": "user", "content": "Không, ý mình là tweet của tài khoản OpenAI"},
+        {"role": "user", "content": "Lấy 4 tweet mới nhất"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "OpenAI", "limit": 4}}]},
+      "metadata": {"what_it_tests": "A correction from topic search to account timeline should switch tools."}
+    },
+    {
+      "id": "GM03_confirmed_send",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Chuẩn bị gửi lên Telegram: Bản tin AI hôm nay đã sẵn sàng."},
+        {"role": "user", "content": "Tôi xác nhận gửi đúng nội dung đó."},
+        {"role": "user", "content": "Gửi ngay nhé"}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "send", "args": {"text": "Bản tin AI hôm nay đã sẵn sàng.", "confirmed": true}}]},
+      "metadata": {"what_it_tests": "After explicit confirmation, the agent may call send with confirmed=true."}
+    },
+    {
+      "id": "GM04_url_correction",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tóm tắt bài này: https://example.com/old"},
+        {"role": "user", "content": "Mình gửi nhầm link"},
+        {"role": "user", "content": "Đọc link này thôi: https://openai.com/research"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://openai.com/research"}}]},
+      "metadata": {"what_it_tests": "A later URL correction should override the earlier URL."}
+    },
+    {
+      "id": "GM05_news_topic_correction",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tin AI trong tuần này có gì?"},
+        {"role": "user", "content": "Đổi sang chip bán dẫn"},
+        {"role": "user", "content": "Vẫn lấy tin chip bán dẫn trong tuần này"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "chip bán dẫn", "topic": "news", "timeframe": "week"}}]},
+      "metadata": {"what_it_tests": "Multi-turn news search should preserve timeframe and update the topic."}
+    }
+  ]
 }
