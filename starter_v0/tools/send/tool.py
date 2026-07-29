@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import os
+import re
 from typing import Any
 
 import requests
 
 from tools._shared import TIMEOUT, err
+
+
+def _redact_telegram_token(text: str) -> str:
+    return re.sub(r"/bot[^/\s]+/", "/bot<redacted>/", text)
 
 
 def send_telegram(text: str = "", confirmed: bool = False) -> dict[str, Any]:
@@ -28,5 +33,7 @@ def send_telegram(text: str = "", confirmed: bool = False) -> dict[str, Any]:
         response.raise_for_status()
         return {"tool": "send_telegram", "status": "sent"}
     except Exception as exc:
-        return err("send_telegram", exc)
-
+        redacted = err("send_telegram", exc)
+        if "message" in redacted:
+            redacted["message"] = _redact_telegram_token(str(redacted["message"]))
+        return redacted

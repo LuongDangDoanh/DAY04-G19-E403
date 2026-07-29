@@ -2,7 +2,7 @@
 
 ## Team
 
-- Team: Bro
+- Team: 
 - Members: 1
 - Provider/model: openrouter / openai/gpt-4o-mini
 
