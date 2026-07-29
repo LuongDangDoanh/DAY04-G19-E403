@@ -299,7 +299,7 @@ Submit `starter_v0/` with:
 - implementation của tool mới, code UI, và dependency tương ứng
 
 Do not submit `.env`, API keys, `.venv/`, hoặc cache/build output.
-Kênh nộp, quy tắc đặt tên và deadline cuối theo thông báo của giảng viên; team cần xác nhận các thông tin này trước khi zip hoặc gửi repo link.
+Kênh nộp, quy tắc đặt tên / deadline cuối theo thông báo của giảng viên; team cần xác nhận các thông tin này trước khi zip hoặc gửi repo link.
 
 ## Checkpoints — K3 buổi sáng (09:00–13:00)
 
@@ -314,3 +314,9 @@ Kênh nộp, quy tắc đặt tên và deadline cuối theo thông báo của gi
    - **v3 + Report B — 12:15–12:35:** áp dụng feedback, chạy v3 và hoàn thiện report bằng evidence.
    - **Final gate — 12:35–12:40:** kiểm tra và chuẩn bị nộp `starter_v0/`.
 7. **Kahoot Recap — 12:40–13:00.**
+
+## Bonus Telegram
+
+| Demo 1 | Demo 2 |
+|---|---|
+| ![Demo 1](starter_v0/data/demo1.jpg) | ![Demo 2](starter_v0/data/demo2.jpg) |
