@@ -6,6 +6,17 @@
 - Members: 1
 - Provider/model: openrouter / openai/gpt-4o-mini
 
+## Phân công công việc
+
+| Người | Họ và tên | Mã học viên | Vai trò chính | Công việc cụ thể |
+|-------|-----------|-------------|---------------|-------------------|
+| 1 | Lương Đăng Doanh | 2A202601209 | Trưởng nhóm / Quản lý version | Chia việc, theo dõi tiến độ, quản lý v0–v3, kiểm tra file nộp |
+| 2 | Nguyễn Quốc Việt | 2A202601737 | System Prompt | Phân tích lỗi agent, sửa system_prompt.md, viết quy tắc chọn tool |
+| 3 | Trương Đình Khoa | 2A202601297 | Tool Declaration | Sửa tools.yaml, mô tả tool, schema arguments, routing rule |
+| 4 | Phùng Văn Đạt | 2A202602012 | Tool Developer | Viết tool mới, đăng ký tool, test tool chạy thật |
+| 5 | Diêm Công Thành | 2A202601689 | Eval & Log Analyst | Chạy eval, đọc run JSON, viết 10 eval case, cập nhật version log |
+| 6 | Nguyên Quang Huy | 2A202601873 | UI, Demo & Report | Làm Streamlit UI, chuẩn bị demo, viết Report A và Report B |
+
 ---
 
 # PHẦN A — Giới thiệu agent
